@@ -3,76 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bet Logic Engine</title>
+    <title>Winning Zone | MartinB-K</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 20px; text-align: center; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 400px; margin: auto; }
-        input { padding: 12px; margin: 10px 0; width: 90%; border-radius: 8px; border: 1px solid #333; background: #252525; color: white; }
-        button { padding: 12px; width: 95%; margin: 5px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-check { background: #00e676; color: #000; }
-        .btn-lose { background: #ff5252; color: white; }
-        #resultBox { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-weight: bold; }
-        .history { margin-top: 30px; text-align: left; border-top: 1px solid #333; padding-top: 10px; }
-        li { color: #ff8a80; list-style: "❌ "; margin-bottom: 5px; }
+        body { font-family: 'Courier New', monospace; background: #000; color: #00ff41; padding: 20px; text-align: center; }
+        .box { border: 2px solid #00ff41; padding: 30px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 0 15px #00ff41; }
+        input { background: #111; border: 1px solid #00ff41; color: white; padding: 15px; width: 85%; margin: 15px 0; border-radius: 5px; outline: none; text-transform: uppercase; }
+        button { background: #00ff41; color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; width: 95%; text-transform: uppercase; }
+        #results { display: none; margin-top: 20px; text-align: left; padding: 15px; border-top: 1px solid #333; }
+        .percent { font-size: 2.5rem; color: #fff; margin: 10px 0; font-weight: 900; }
     </style>
 </head>
 <body>
+    <div class="box">
+        <h1>WELCOME TO WINNING ZONE <br> MARTINB-K</h1>
+        <div id="search-ui">
+            <h3>WHICH TEAM DO YOU WANT ME TO PREDICT FOR YOU?</h3>
+            <input type="text" id="team" placeholder="ENTER TEAM NAME...">
+            <button onclick="analyze()">RUN ANALYTICS</button>
+        </div>
 
-    <div class="card">
-        <h1>⚽ Boy Child Logic</h1>
-        <p style="font-size: 0.8rem; color: #888;">Stop the "Bro, I'm Fucked" moments.</p>
-
-        <input type="text" id="teamInput" placeholder="Enter Team Name (e.g. Man Utd)">
-        
-        <button class="btn-check" onclick="analyze()">Analyze Bet</button>
-        <button class="btn-lose" onclick="markAsLoss()">I Lost on this Team</button>
-
-        <div id="resultBox"></div>
-
-        <div class="history">
-            <h4>Wall of Shame:</h4>
-            <ul id="historyList"></ul>
-            <button onclick="localStorage.clear(); location.reload();" style="background:none; color:#555; font-size:10px;">Clear All Data</button>
+        <div id="results">
+            <h2 id="resTeam">TEAM</h2>
+            <div class="percent" id="resPercent">0%</div>
+            <p id="resAdvice" style="color:#00ff41; font-weight:bold;"></p>
+            <p id="resTrend" style="font-size:0.8rem; color:#888;"></p>
+            <button onclick="location.reload()" style="background:#222; color:#fff; margin-top:15px; font-size: 10px;">NEW PREDICTION</button>
         </div>
     </div>
 
     <script>
-        let losses = JSON.parse(localStorage.getItem('myLosses')) || [];
-
-        function render() {
-            const list = document.getElementById('historyList');
-            list.innerHTML = losses.map(t => `<li>${t}</li>`).join('');
-            localStorage.setItem('myLosses', JSON.stringify(losses));
-        }
-
-        function markAsLoss() {
-            let team = document.getElementById('teamInput').value.trim().toUpperCase();
-            if (team) {
-                losses.push(team);
-                render();
-                alert(team + " added to your losses.");
-            }
-        }
+        const leagues = {
+            "ENGLAND": { teams: ["CITY", "ARSENAL", "LIVERPOOL", "CHELSEA", "UNITED", "SPURS", "VILLA", "NEWCASTLE"], trend: "Over 2.5 High Chance", surity: 82, market: "Direct Win / GG" },
+            "SPAIN": { teams: ["MADRID", "BARCELONA", "ATLETICO", "GIRONA", "SEVILLA", "VALENCIA"], trend: "Tactical / Under 3.5", surity: 74, market: "Home Win / Under 3.5" },
+            "GERMANY": { teams: ["BAYERN", "DORTMUND", "LEVERKUSEN", "LEIPZIG", "FRANKFURT"], trend: "Goal Fest / Over 2.5", surity: 88, market: "Over 2.5 / GG" },
+            "TURKEY": { teams: ["GALATASARAY", "FENERBAHCE", "BESIKTAS", "TRABZONSPOR"], trend: "Strong Home Advantage", surity: 79, market: "Home Win (1)" }
+        };
 
         function analyze() {
-            let team = document.getElementById('teamInput').value.trim().toUpperCase();
-            let box = document.getElementById('resultBox');
-            let count = losses.filter(t => t === team).length;
+            const query = document.getElementById('team').value.toUpperCase();
+            if(!query) return;
 
-            box.style.display = "block";
-
-            if (count >= 2) {
-                box.style.background = "#d32f2f";
-                box.innerHTML = `⚠️ BRO, YOU ARE FUCKED UP!<br><small>You lost on ${team} ${count} times. DO NOT BET!</small>`;
-            } else if (count === 1) {
-                box.style.background = "#f57c00";
-                box.innerHTML = `🚨 CAUTION: You lost on ${team} once before. Watch out.`;
-            } else {
-                box.style.background = "#388e3c";
-                box.innerHTML = `✅ Analysis Clear. No repeat mistakes for ${team}.`;
+            // Default logic if team isn't in the specific list
+            let found = { trend: "General Global Stats", surity: 62, market: "Double Chance (X2)" };
+            
+            for (let L in leagues) {
+                if (leagues[L].teams.some(t => query.includes(t))) {
+                    found = leagues[L];
+                    break;
+                }
             }
+
+            document.getElementById('search-ui').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('resTeam').innerText = query;
+            document.getElementById('resPercent').innerText = found.surity + "% SURETY";
+            document.getElementById('resAdvice').innerText = "RECOMMENDED: " + found.market;
+            document.getElementById('resTrend').innerText = "League Analysis: " + found.trend;
         }
-        render();
     </script>
 </body>
 </html>
