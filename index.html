@@ -6,135 +6,114 @@
     <title>WINNING ZONE | MARTINB-K</title>
     <style>
         :root { --bg: #0b0e14; --card: #161a23; --accent: #ffc107; --text: #ffffff; --dim: #8a8d91; --green: #00ff41; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
         
-        /* Navigation */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(11, 14, 20, 0.9); sticky; top: 0; z-index: 100; border-bottom: 1px solid #222; }
-        .logo { font-weight: bold; color: var(--accent); letter-spacing: 1px; }
-        .nav-links { display: flex; gap: 15px; font-size: 0.8rem; }
-        .nav-links span { cursor: pointer; color: var(--dim); transition: 0.3s; }
-        .nav-links .active { color: #fff; border-bottom: 2px solid var(--accent); }
+        .container { width: 100%; max-width: 450px; padding: 20px; margin: auto; }
+        .panel { display: none; width: 100%; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Hero & Search Section */
-        .hero { padding: 40px 20px; text-align: left; max-width: 600px; }
-        .live-status { color: var(--green); font-size: 0.7rem; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        h1 { font-size: 3rem; line-height: 1.1; margin: 10px 0; font-weight: 800; text-transform: uppercase; }
-        h1 span { color: var(--accent); }
-        
-        .search-container { margin-top: 30px; position: relative; }
-        input { background: #1c222d; border: 1px solid #333; color: #fff; padding: 18px; width: 90%; border-radius: 12px; font-size: 1rem; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(255, 193, 7, 0.2); }
-        
-        /* Results Area */
-        #search-results { display: none; margin-top: 20px; animation: slideUp 0.4s ease; }
-        .result-card { background: linear-gradient(145deg, #161a23, #1c222d); border-radius: 20px; padding: 25px; border: 1px solid #333; }
-        .surity-box { font-size: 3.5rem; font-weight: 900; color: var(--accent); margin: 10px 0; }
+        /* Fire Animation */
+        .fire-particle { position: fixed; font-size: 25px; pointer-events: none; z-index: 999; animation: flyUp 2s linear forwards; }
+        @keyframes flyUp { 0% { transform: translateY(100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
 
-        /* Tabbed Content */
-        .page-section { display: none; padding: 20px; }
-        .active-section { display: block; }
+        /* UI Elements */
+        #user-lock { text-align: center; margin-top: 80px; }
+        input { background: #1c222d; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 12px; width: 100%; margin: 10px 0; outline: none; box-sizing: border-box; text-align: center; }
+        .btn { background: var(--accent); color: #000; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         
-        .match-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 12px; border: 1px solid #222; }
-        .badge { background: rgba(255,193,7,0.1); color: var(--accent); padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; }
-
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        h1 { font-size: 3.5rem; line-height: 0.9; font-weight: 900; }
+        h1 span { color: var(--accent); display: block; }
+        
+        .match-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #222; }
+        .pick-val { color: var(--green); font-weight: 800; }
+        .admin-footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 0.6rem; color: #111; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo">WINNING ZONE</div>
-        <div class="nav-links">
-            <span class="active" onclick="showPage('home')">Predictions</span>
-            <span onclick="showPage('report')">Report</span>
-            <span onclick="showPage('builder')">Builder</span>
+    <div class="container">
+        <div id="user-lock" class="panel" style="display: block;">
+            <div style="font-size: 3rem;">🔥</div>
+            <h2 style="color: var(--accent);">WINNING ZONE</h2>
+            <p style="color: var(--dim);">ENTER PASSCODE FOR FIRE PICKS</p>
+            <input type="password" id="userPass" placeholder="••••">
+            <button class="btn" onclick="checkUserAccess()">Unlock & Ignite</button>
+            <div class="admin-footer" onclick="openAdminPrompt()">ADMIN ACCESS</div>
         </div>
-    </nav>
 
-    <div id="home" class="page-section active-section">
-        <div class="hero">
-            <div class="live-status"><span>●</span> LIVE NOW — DATABASE ACTIVE</div>
-            <h1>BET SMARTER <span>WITH MARTINB-K.</span></h1>
-            
-            <div class="search-container">
-                <input type="text" id="mainSearch" placeholder="Search team (e.g. Arsenal, Chelsea, Madrid)..." onkeyup="if(event.key === 'Enter') executeSearch()">
-                <button onclick="executeSearch()" style="position: absolute; right: 5%; top: 15px; background: none; border: none; color: var(--accent); font-weight: bold; cursor: pointer;">GO</button>
-            </div>
-
-            <div id="search-results">
-                <div class="result-card">
-                    <div id="resLeague" class="badge">GLOBAL ANALYTICS</div>
-                    <h2 id="resMatch" style="margin: 10px 0;">TEAM NAME</h2>
-                    <div class="surity-box" id="resSurity">0%</div>
-                    <p id="resAdvice" style="font-weight: bold; color: var(--green);"></p>
-                    <button onclick="resetSearch()" style="background: #333; color: #fff; border: none; padding: 10px; border-radius: 8px; width: 100%; margin-top: 15px;">CLOSE</button>
-                </div>
-            </div>
+        <div id="predictions-view" class="panel">
+            <h1>BET <span>SMARTER.</span></h1>
+            <div id="matchesContainer"></div>
+            <button class="btn" onclick="location.reload()" style="background: #222; color: #fff; margin-top: 20px;">Exit</button>
         </div>
-    </div>
 
-    <div id="report" class="page-section">
-        <h2 style="letter-spacing: 2px;">DAILY REPORT</h2>
-        <div id="matchList">
-            </div>
+        <div id="admin-dash" class="panel">
+            <h2 style="color: var(--green);">ADMIN PANEL</h2>
+            <input type="text" id="newDailyPass" placeholder="Set New Passcode">
+            <textarea id="matchesInput" rows="8" placeholder="Team A vs Team B | Pick | 90%"></textarea>
+            <button class="btn" onclick="saveData()">Update Site</button>
+        </div>
     </div>
 
     <script>
-        // --- UPLOAD YOUR MATCHES HERE ---
-        const matches = [
-            { team: "CHELSEA", vs: "Arsenal", league: "EPL", surity: 78, pick: "Double Chance (1X)" },
-            { team: "REAL MADRID", vs: "Barca", league: "LA LIGA", surity: 92, pick: "Over 2.5 Goals" },
-            { team: "GOR MAHIA", vs: "AFC Leopards", league: "KPL", surity: 85, pick: "Direct Win (1)" },
-            { team: "GALATASARAY", vs: "Fenerbahce", league: "TURKEY", surity: 80, pick: "Home Win" }
-        ];
+        const MASTER_ADMIN_KEY = "MARTINB-K-BOSS";
 
-        // This function builds the "Report" page automatically from your list
-        function loadMatches() {
-            const container = document.getElementById('matchList');
-            container.innerHTML = matches.map(m => `
-                <div class="match-card">
-                    <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--dim);">
-                        <span>${m.league}</span> <span>LIVE ANALYZED</span>
-                    </div>
-                    <h3 style="margin:10px 0;">${m.team} vs ${m.vs}</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span class="badge">PICK: ${m.pick}</span>
-                        <span style="color:var(--accent); font-weight:bold;">${m.surity}%</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // The Search Engine Logic
-        function executeSearch() {
-            const query = document.getElementById('mainSearch').value.toUpperCase();
-            if(!query) return;
-
-            const found = matches.find(m => m.team.includes(query) || m.vs.toUpperCase().includes(query));
-            
-            document.getElementById('search-results').style.display = 'block';
-            if(found) {
-                document.getElementById('resMatch').innerText = `${found.team} vs ${found.vs}`;
-                document.getElementById('resSurity').innerText = found.surity + "%";
-                document.getElementById('resAdvice').innerText = "RECOMMENDED: " + found.pick;
-                document.getElementById('resLeague').innerText = found.league;
-            } else {
-                document.getElementById('resMatch').innerText = query;
-                document.getElementById('resSurity').innerText = "65%";
-                document.getElementById('resAdvice').innerText = "RECOMMENDED: Double Chance (X2)";
-                document.getElementById('resLeague').innerText = "GENERAL ANALYTICS";
+        function startFire() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const fire = document.createElement('div');
+                    fire.className = 'fire-particle';
+                    fire.innerHTML = '🔥';
+                    fire.style.left = Math.random() * 100 + 'vw';
+                    document.body.appendChild(fire);
+                    setTimeout(() => fire.remove(), 2000);
+                }, i * 100);
             }
         }
 
-        function showPage(id) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-section'));
-            document.getElementById(id).classList.add('active-section');
-            if(id === 'report') loadMatches();
+        function playAtasa() {
+            // This uses a text-to-speech engine to shout it if you don't have an mp3 file
+            const msg = new SpeechSynthesisUtterance("Atasaaaaaaaaa");
+            msg.rate = 1.2;
+            msg.pitch = 2;
+            window.speechSynthesis.speak(msg);
         }
 
-        function resetSearch() {
-            document.getElementById('search-results').style.display = 'none';
-            document.getElementById('mainSearch').value = "";
+        function checkUserAccess() {
+            const storedPass = localStorage.getItem('dailyPass') || "0000";
+            if(document.getElementById('userPass').value === storedPass) {
+                playAtasa();
+                startFire();
+                setTimeout(() => {
+                    document.getElementById('user-lock').style.display = 'none';
+                    document.getElementById('predictions-view').style.display = 'block';
+                    displayMatches();
+                }, 500);
+            } else { alert("Wrong code, bro!"); }
+        }
+
+        function openAdminPrompt() {
+            if(prompt("Admin Key:") === MASTER_ADMIN_KEY) {
+                document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+                document.getElementById('admin-dash').style.display = 'block';
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('dailyPass', document.getElementById('newDailyPass').value);
+            localStorage.setItem('matchesRaw', document.getElementById('matchesInput').value);
+            alert("UPLOADED!");
+            location.reload();
+        }
+
+        function displayMatches() {
+            const raw = localStorage.getItem('matchesRaw') || "";
+            const lines = raw.split('\n');
+            document.getElementById('matchesContainer').innerHTML = lines.map(line => {
+                const p = line.split('|');
+                if(p.length < 3) return "";
+                return `<div class="match-card"><b>${p[0]}</b><br><span class="pick-val">PICK: ${p[1]}</span> | ${p[2]}</div>`;
+            }).join('');
         }
     </script>
 </body>
