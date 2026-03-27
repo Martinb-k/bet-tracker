@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARTIN'S SITE | PRIVATE</title>
+    <style>
+        :root { --bg: #050505; --door: #1a1a1a; --accent: #ffc107; --text: #ffffff; }
+        body { font-family: 'Arial Black', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        
+        /* THE DOOR SCREEN */
+        #door-container { text-align: center; width: 300px; transition: 0.5s; z-index: 10; }
+        .door { width: 180px; height: 280px; background: var(--door); border: 6px solid #222; border-radius: 8px 8px 0 0; margin: 0 auto; position: relative; box-shadow: 0 0 100px #000; }
+        .door-sign { background: #000; padding: 5px 15px; border: 1px solid #ffc107; margin-top: 40px; display: inline-block; font-size: 0.7rem; color: #ffc107; letter-spacing: 2px; }
+        .handle { position: absolute; right: 15px; top: 140px; width: 12px; height: 12px; background: #ffc107; border-radius: 50%; box-shadow: 0 0 10px gold; }
+        
+        /* THE SPLASH OVERLAY */
+        #splash-overlay { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: rgba(0,0,0,0.7); display: none; z-index: 999; 
+            align-items: center; justify-content: center; pointer-events: none;
+        }
+        .mess { 
+            width: 120%; height: 120%; 
+            background: url('https://png.pngtree.com/png-vector/20240322/ourmid/pngtree-liquid-chocolate-splashes-brown-png-image_12187747.png'); 
+            background-size: cover; background-repeat: no-repeat; background-position: center;
+            filter: brightness(0.3) contrast(1.5) sepia(100%) hue-rotate(-30deg); /* Darker, organic look */
+            animation: splatAnim 0.2s ease-out forwards;
+        }
+        @keyframes splatAnim { 0% { transform: scale(0.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* CONTENT STYLING */
+        #main-site { display: none; width: 100%; max-width: 450px; height: 100vh; overflow-y: auto; padding: 20px; box-sizing: border-box; background: #0b0e14; z-index: 5; }
+        .match-card { background: #161a23; padding: 15px; margin-bottom: 12px; border-radius: 12px; border-left: 5px solid var(--accent); position: relative; }
+        input { background: #111; border: 2px solid #333; color: #ffc107; padding: 12px; width: 90%; border-radius: 8px; text-align: center; font-size: 1.1rem; margin-top: 20px; outline: none; }
+        input:focus { border-color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div id="splash-overlay"><div class="mess"></div></div>
+
+    <div id="door-container">
+        <div class="door">
+            <div class="door-sign">MARTIN'S SITE</div>
+            <div class="handle"></div>
+        </div>
+        <input type="password" id="passInput" placeholder="ENTER CODE">
+        <button onclick="tryOpen()" style="background:var(--accent); border:none; padding:15px 30px; margin-top:15px; font-weight:900; border-radius:8px; cursor:pointer; width:95%; text-transform: uppercase;">Open Door</button>
+    </div>
+
+    <div id="main-site">
+        <h1 style="color:var(--accent); font-size: 2.5rem; text-align:center; margin-bottom: 5px;">ATASA! 🔥</h1>
+        <p style="text-align: center; color: #888; margin-bottom: 30px;">WEEKEND BANKERS LOADED</p>
+        <div id="list"></div>
+        <button onclick="location.reload()" style="background:#222; color:white; border:none; padding:15px; width:100%; margin-top:30px; border-radius:8px; font-weight: bold;">LOCK DOOR</button>
+    </div>
+
+    <script>
+        const CODE = "2544"; // Your weekend passcode
+        
+        const MATCHES = [
+            { d: "SAT | MAR 28", t: "Arsenal vs Man City", p: "Under 2.5 Goals", s: "93%" },
+            { d: "SAT | MAR 28", t: "Real Madrid vs Valencia", p: "Home Win (1)", s: "95%" },
+            { d: "SAT | MAR 28", t: "Bayern vs Dortmund", p: "Over 3.5 Goals", s: "94%" },
+            { d: "SAT | MAR 28", t: "Leverkusen vs Stuttgart", p: "GG (BTS)", s: "91%" },
+            { d: "SUN | MAR 29", t: "Liverpool vs Everton", p: "Home Win (1)", s: "96%" },
+            { d: "SUN | MAR 29", t: "Barcelona vs Rayo", p: "Over 2.5 Goals", s: "94%" },
+            { d: "SUN | MAR 29", t: "Man Utd vs Newcastle", p: "GG (BTS)", s: "92%" },
+            { d: "SUN | MAR 29", t: "Chelsea vs West Ham", p: "Over 2.5 Goals", s: "90%" }
+        ];
+
+        function tryOpen() {
+            const val = document.getElementById('passInput').value;
+            if(val === CODE) {
+                // Success sound
+                const msg = new SpeechSynthesisUtterance("ATASAAAAAAAAA");
+                msg.rate = 1.4; msg.pitch = 0.6;
+                window.speechSynthesis.speak(msg);
+
+                document.getElementById('door-container').style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById('door-container').style.display = "none";
+                    document.getElementById('main-site').style.display = "block";
+                    showGames();
+                }, 400);
+            } else {
+                showRealisticMess();
+            }
+        }
+
+        function showRealisticMess() {
+            const overlay = document.getElementById('splash-overlay');
+            overlay.style.display = 'flex';
+            
+            // Phone vibration for the "impact"
+            if (navigator.vibrate) { navigator.vibrate([400, 100, 400]); }
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('passInput').value = "";
+            }, 3500); // Stays for 3.5 seconds
+        }
+
+        function showGames() {
+            document.getElementById('list').innerHTML = MATCHES.map(m => `
+                <div class="match-card">
+                    <span style="color:var(--accent); font-size: 0.7rem; font-weight:bold;">${m.d}</span>
+                    <div style="margin:5px 0; font-size: 1.1rem; font-weight: bold;">${m.t}</div>
+                    <div style="color:#00ff41; font-weight:900; font-size: 1.1rem;">${m.p}</div>
+                    <div style="position:absolute; right:15px; top:35px; font-size:0.85rem; color:#888; font-weight: 900;">${m.s}</div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
+
