@@ -3,107 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MARTIN'S SITE | PRIVATE</title>
+    <title>MARTIN'S SITE | VIP ACCESS</title>
     <style>
         :root { --bg: #050505; --door: #1a1a1a; --accent: #ffc107; --text: #ffffff; }
-        body { font-family: 'Arial Black', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; height: 100vh; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Arial Black', sans-serif; background: #000; overflow: hidden; }
+
+        /* FOOTBALL VIDEO BACKGROUND */
+        #video-bg {
+            position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%;
+            z-index: -2; filter: brightness(0.3) blur(1px); object-fit: cover;
+        }
+        .overlay-dark { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: -1; }
+
         .flex-center { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; }
         
         /* DOOR SCREEN */
-        #door-container { text-align: center; width: 300px; z-index: 10; }
-        .door { width: 160px; height: 250px; background: var(--door); border: 5px solid #222; border-radius: 8px 8px 0 0; margin: 0 auto; position: relative; }
-        .door-sign { background: #000; padding: 5px; border: 1px solid var(--accent); margin-top: 40px; display: inline-block; font-size: 0.6rem; color: var(--accent); }
+        #door-container { text-align: center; width: 320px; z-index: 10; transition: 0.5s; }
+        .door { width: 160px; height: 250px; background: var(--door); border: 5px solid #333; border-radius: 10px 10px 0 0; margin: 0 auto; position: relative; box-shadow: 0 0 50px #000; }
+        .door-sign { background: #000; padding: 5px 15px; border: 1px solid var(--accent); margin-top: 40px; display: inline-block; font-size: 0.6rem; color: var(--accent); letter-spacing: 2px; }
+        .handle { position: absolute; right: 15px; top: 125px; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px gold; }
         
-        /* SPLASH & PAYMENT INFO */
+        /* SPLASH SCREEN & PAYMENT */
         #splash-overlay { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background: rgba(0,0,0,0.9); display: none; z-index: 999; 
+            background: rgba(0,0,0,0.92); display: none; z-index: 999; 
             flex-direction: column; align-items: center; justify-content: center; text-align: center;
         }
-        .mess { position: absolute; width: 100%; height: 100%; background: url('https://png.pngtree.com/png-vector/20240322/ourmid/pngtree-liquid-chocolate-splashes-brown-png-image_12187747.png'); background-size: cover; filter: brightness(0.2) sepia(100%); z-index: -1; }
-        .pay-box { border: 2px solid #ff4444; padding: 20px; border-radius: 15px; background: black; width: 80%; }
+        .mess { position: absolute; width: 100%; height: 100%; background: url('https://png.pngtree.com/png-vector/20240322/ourmid/pngtree-liquid-chocolate-splashes-brown-png-image_12187747.png'); background-size: cover; filter: brightness(0.2) contrast(1.5) sepia(100%); z-index: -1; }
+        .pay-box { border: 3px solid #ff4444; padding: 25px; border-radius: 15px; background: black; width: 85%; box-shadow: 0 0 40px #ff4444; }
 
         /* MAIN SITE */
-        #main-site { display: none; padding: 20px; max-width: 500px; margin: auto; }
-        .match-card { background: #161a23; padding: 15px; margin-bottom: 10px; border-radius: 10px; border-left: 5px solid var(--accent); position: relative; }
+        #main-site { display: none; width: 100%; max-width: 450px; height: 100vh; overflow-y: auto; padding: 20px; box-sizing: border-box; background: #0b0e14; z-index: 5; margin: auto; }
+        .match-card { background: #161a23; padding: 18px; margin-bottom: 12px; border-radius: 12px; border-left: 6px solid var(--accent); color: #fff; font-family: 'Inter', sans-serif; font-size: 0.95rem; }
         
-        /* ADMIN PANEL */
-        #admin-panel { display: none; padding: 20px; background: #111; border-top: 2px solid var(--accent); }
-        textarea { width: 100%; background: #000; color: #0f0; border: 1px solid #333; padding: 10px; height: 150px; }
-        input { background: #111; border: 1px solid #333; color: var(--accent); padding: 12px; width: 80%; border-radius: 8px; text-align: center; margin-bottom: 10px; }
+        input { background: rgba(0,0,0,0.8); border: 2px solid #444; color: var(--accent); padding: 15px; width: 90%; border-radius: 10px; text-align: center; font-size: 1.2rem; margin-top: 20px; outline: none; }
+        .btn-open { background: var(--accent); border: none; padding: 16px; margin-top: 15px; font-weight: 900; border-radius: 10px; cursor: pointer; width: 95%; text-transform: uppercase; color: #000; }
     </style>
 </head>
 <body>
 
-    <div id="door-container" class="flex-center">
-        <div class="door"><div class="door-sign">MARTIN'S SITE</div></div>
-        <input type="password" id="passInput" placeholder="ENTER CODE">
-        <button onclick="tryOpen()" style="background:var(--accent); border:none; padding:15px; width:85%; font-weight:900; border-radius:8px; cursor:pointer;">OPEN DOOR</button>
-        <p onclick="showAdmin()" style="font-size: 0.6rem; margin-top: 50px; color: #222;">ADMIN ACCESS</p>
-    </div>
+    <video autoplay muted loop id="video-bg" playsinline>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-football-player-kicking-the-ball-in-slow-motion-41864-large.mp4" type="video/mp4">
+    </video>
+    <div class="overlay-dark"></div>
 
     <div id="splash-overlay">
         <div class="mess"></div>
         <div class="pay-box">
-            <h1 style="color:#ff4444; margin:0;">WRONG CODE!</h1>
-            <p>Access cost: 200 KES</p>
-            <h2 style="color:var(--accent);">M-PESA: 0731945198</h2>
-            <p>WhatsApp proof to:<br><b style="color:#00ff41;">0750170861</b></p>
-            <button onclick="location.reload()" style="background:white; border:none; padding:10px; border-radius:5px; margin-top:10px;">TRY AGAIN</button>
-        </div>
-    </div>
-
-    <div id="main-site">
-        <h1 style="color:var(--accent); text-align:center;">ATASA! 🔥</h1>
-        <div id="match-list"></div>
-        <button onclick="location.reload()" style="width:100%; background:#333; color:white; border:none; padding:15px; margin-top:20px; border-radius:8px;">LOCK SITE</button>
-    </div>
-
-    <div id="admin-panel" class="flex-center">
-        <h2>BOSS ONLY</h2>
-        <input type="password" id="adminKey" placeholder="ADMIN KEY">
-        <input type="text" id="newCode" placeholder="SET USER PASSCODE">
-        <textarea id="matchInput" placeholder="Paste matches here..."></textarea>
-        <button onclick="saveAdminData()" style="background:var(--accent); width:85%; padding:15px; border:none; margin-top:10px; font-weight:900;">IGNITE SITE</button>
-    </div>
-
-    <script>
-        function tryOpen() {
-            const userPass = document.getElementById('passInput').value;
-            const correctPass = localStorage.getItem('userCode') || "2544";
-            
-            if(userPass === correctPass) {
-                document.getElementById('door-container').style.display = 'none';
-                document.getElementById('main-site').style.display = 'block';
-                loadMatches();
-            } else {
-                document.getElementById('splash-overlay').style.display = 'flex';
-                if (navigator.vibrate) navigator.vibrate([500, 100, 500]);
-            }
-        }
-
-        function showAdmin() {
-            document.getElementById('door-container').style.display = 'none';
-            document.getElementById('admin-panel').style.display = 'flex';
-        }
-
-        function saveAdminData() {
-            if(document.getElementById('adminKey').value === "MARTINB-K-BOSS") {
-                localStorage.setItem('userCode', document.getElementById('newCode').value);
-                localStorage.setItem('savedMatches', document.getElementById('matchInput').value);
-                alert("Site Updated, Boss!");
-                location.reload();
-            } else { alert("ACCESS DENIED"); }
-        }
-
-        function loadMatches() {
-            const raw = localStorage.getItem('savedMatches') || "No matches yet. Admin must add games.";
-            const lines = raw.split('\n');
-            document.getElementById('match-list').innerHTML = lines.map(line => `
-                <div class="match-card">${line}</div>
-            `).join('');
-        }
-    </script>
-</body>
-</html>
+            <h1 style="color:#ff4444; margin:0; font-size: 2rem;">ACCESS DENIED</h1>
+            <p style="color:white; margin: 15px 0;">To unlock today's Fire Picks:</p>
+            <h2 style="color:var(--accent); margin:5px 0;">M-PESA: 07319451
 
